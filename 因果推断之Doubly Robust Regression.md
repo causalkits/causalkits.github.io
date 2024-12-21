@@ -182,6 +182,7 @@ $$
 
 注意一下上述公式里面的 $f_t(x,y,1)$ 和 $f_t(x,1)$，首先要关注的是这两个概率密度函数是关于 $t$ 的泛函。另外为什么要写成这种相除的形式呢？主要原因是 $f_t(y|x,t=1)$ 这个概率密度函数不太好直接给出，另外在处理 $t\mathbb{I}(\tilde{o})$这个分布时，条件概率并不好直接处理。下面的公式中会出现 $f_{t=0}(1,x,y)$，本质上就是 $\mathcal{P}$ 。
 
+
 $$
 \begin{align}  \frac{\mathrm{d}\Psi(\mathcal{P}_t)}{\mathrm{d}t} \Bigg\vert_{t=0} &=\frac{\mathrm{d}\int y\frac{f_t(x,y,1)f_t(x)}{f_t(1,x)}\mathrm{d}y\mathrm{d}x}{\mathrm{d}t}\Bigg|_{t=0}\\ &=\int(y\{\frac{f'_t(x,y,1)f_t(x)f_t(1,x)+f'_t(x)f_t(x,y,1)f_t(1,x)}{(f_t(1,x))^2}\\&-\frac{f_t'(1,x)f_t(x,y,1)f_t(x)}{(f_t(1,x))^2})\}\mathrm{d}y\mathrm{d}x\Bigg|_{t=0}\\ 
 &=\int y\{\frac{(\mathbb{I}(\tilde{x},\tilde{y},1)-f_{t=0}(1,x,y))f_{t=0}(1,x)f_{t=0}(x)}{(f_{t=0}(1,x))^2}\\
@@ -192,6 +193,7 @@ $$
 &=\frac{\mathbb{I}(\tilde{x})}{\pi(\tilde{x},\mathcal{P})}(\tilde{y}-m(1,\tilde{x}))+m(1,\tilde{x})-\Psi(\mathcal{P})\\ 
 &=\Phi(\tilde{o},\mathcal{P}) \end{align}
 $$
+
 
 这个公式是不是似曾相识，说实话这个CATE公式的推导其实困扰了我好多年，花了很多气力才把这些艰深莫测的公式理解清楚，但每次一看到这个奇怪的公式又觉得自己根本没有理解，所以在这里用这个例子当做一个里程碑的总结。这个公式就是 $\Psi(\mathcal{P}_t)$在某个点 $\tilde{o}(\tilde{x},\tilde{y},1)$对应的EIF，其中：
 
@@ -405,7 +407,7 @@ $$
  \frac{\partial \mathbb{E}_{\mathcal{P}_t} (\varphi(O;\hat{\theta},\hat{\eta}))}{\partial t} =\mathbb{E}_{\mathcal{\tilde{P}}}(\phi(O,\mathcal{P}))-\mathbb{E}_{\mathcal{P}}(\phi(O,\mathcal{P})) 
 $$
 
-这个公式咋一看让人费解，仔细看其实就是前面EIF章节讲述的内容，只不过这里换了一个写法，更加简单的理解这就是定义不同而已。在EIF那一节，我们研究的是目标参数在样本扰动下的EIF，而这里是moment condition在样本扰动下的EIF。这里就可以看出他们的联系了，满足moment condition的$\theta$ 本质上就是一个参数预估，所以只是换种形式来表达参数关于样本扰动的EIF。基于我们对EIF定义的认识可以得出对于，要求任何一个分布，对应的都满足$\mathbb{E}_{\mathcal{P}_t}[\phi(O,\mathcal{P}_t)]=0$，这个是我们前面描述的EIF本身的定义决定的。有从这个公式出发就可以证明$\psi(O;\theta,\eta) = \varphi(O;\theta,\beta)+\phi(O;\theta,\eta)$是一个满足Neyman Orthogonality的score function。
+这个公式咋一看让人费解，仔细看其实就是前面EIF章节讲述的内容，只不过这里换了一个写法，更加简单的理解这就是定义不同而已。在EIF那一节，我们研究的是目标参数在样本扰动下的EIF，而这里是moment condition在样本扰动下的EIF。这里就可以看出他们的联系了，满足moment condition的$\theta$ 本质上就是一个参数预估，所以只是换种形式来表达参数关于样本扰动的EIF。基于我们对EIF定义的认识可以得出对于，要求任何一个分布，对应的都满足 $\mathbb{E}_{\mathcal{P}_t}[\phi(O,\mathcal{P}_t)]=0$ ，这个是我们前面描述的EIF本身的定义决定的。有从这个公式出发就可以证明 $\psi(O;\theta,\eta) = \varphi(O;\theta,\beta)+\phi(O;\theta,\eta)$ 是一个满足Neyman Orthogonality的score function。
 
 $$
 \psi(O;\theta,\eta) = \varphi(O;\theta,\beta)+\phi(O;\theta,\eta)
@@ -425,7 +427,7 @@ $$
 \Rightarrow \frac{1}{t}\mathbb{E}_{\mathcal{P}}[\phi(O;\theta_{\mathcal{P}_t},\eta_{\mathcal{P}_t})]=\mathbb{E}_{\mathcal{P}}[\phi(O;\theta_{\mathcal{P}_t},\eta_{\mathcal{P}_t})]-\mathbb{E}_{\mathcal{\tilde{P}}}[\phi(O;\theta_{\mathcal{P}_t},\eta_{\mathcal{P}_t})]
 $$
 
-在 $t\rightarrow 0$时，所以$\mathbb{E}_{\mathcal{P}}[\phi(O;\theta_{\mathcal{P}_t},\eta_{\mathcal{P}_t})]=\mathbb{E}_{\mathcal{P}}[\phi(O;\theta_{\mathcal{P}},\eta_{\mathcal{P}})]=0$，这是由EIF的定义决定的，所以可以得到：
+在 $t\rightarrow 0$ 时，所以 $\mathbb{E}_{\mathcal{P}}[\phi(O;\theta_{\mathcal{P}_t},\eta_{\mathcal{P}_t})]=\mathbb{E}_{\mathcal{P}}[\phi(O;\theta_{\mathcal{P}},\eta_{\mathcal{P}})]=0$ ，这是由EIF的定义决定的，所以可以得到：
 
 $$
 \frac{\mathbb{E}_{\mathcal{P}}[\phi(O;\theta_{\mathcal{P}_t},\eta_{\mathcal{P}_t})]}{t}=-\mathbb{E}_{\mathcal{\tilde{P}}}[\phi(O;\theta_{\mathcal{P}_t},\eta_{\mathcal{P}_t})]
