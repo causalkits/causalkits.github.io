@@ -1,4 +1,5 @@
 
+
 因果推断领域一个重要的研究方向是观察数据建模（Observational Data Modeling），这个领域一个重要的概念是Doubly Robust，想理解这个耳熟能详的概念其实是不容易的，特别是对于工业界做算法的同学，没有太多时间去钻研那些神秘莫测的公式。然后多数paper又是讳莫如深得列出一大堆公式来论证自己的合理性，虽然多数创新也就是加一个简单的结构或者正则项，但依然设置了一堵非常高的学术墙。所以这篇文档试图从一个更加易于理解的角度，阐述一下Doubly Robust，希望对于大家看论文或者做创新提供一把好梯子。还是老规矩，这篇文档里面会中英文夹杂，主要的目的也还是避免蹩脚的翻译，方便大家能够对应上paper中的内容。
 
 在讲述Doubly Robust之前，我们还是要回到因果推断领域，回到我们需要解什么样的问题上来。大部分出现Doubly Robust的研究基本都会出现在CATE （Conditional Average Treatment Effect）的场景，一般情况下我们可以表示为（如果你对这个公式还不是很熟悉，说明你还是一个刚入坑因果推断的同学，后面的内容看起来不是那么顺畅其实也是正常的。
@@ -7,11 +8,11 @@ $$
 \tau(X) =\mathbb{E}_{X}\{\mathbb{E}(y|T=1,X=x)-\mathbb{E}(y|T=0,X=x)\} 
 $$
 
-回到公式，简单地理解就是给定某个子人群 $X=x$ ，假设施加某个Treatment（$T=1$）对应的增量是多少？这看起来并不是一个很难的问题，为什么要引入一个玄之又玄的Doubly Robust的概念呢？
+回到公式，简单地理解就是给定某个子人群  $X=x$  ，假设施加某个Treatment（ $T=1$ ）对应的增量是多少？这看起来并不是一个很难的问题，为什么要引入一个玄之又玄的Doubly Robust的概念呢？
 
-故事要从 $\mathbb{E}(y|T=1,X=x)$说起，在很多paper中也被写成 $m(1,x)$，可以简单理解成一个模型能够产出不同子人群的outcome期望。这里你肯定有一个问题，明明都可以直接从样本中直接统计出来期望，为啥要用一个模型来预估呢？其实答案也很简单：一个样本不能同时存在treatment和contol组，如果不用模型，对于这样的potential outcome就无法通过统计得出了，这里需要注意$\mathbb{E}_X$是针对所有的样本，既包含实验组也包含对照组的样本。另外这样的设计也是有利于设计更加honest的模型，比如可以通过其他的样本来预估 $m(1,x)$ ，从而减少Conditional Average Treatment Effect的variance的累积。
+故事要从  $\mathbb{E}(y|T=1,X=x)$ 说起，在很多paper中也被写成  $m(1,x)$ ，可以简单理解成一个模型能够产出不同子人群的outcome期望。这里你肯定有一个问题，明明都可以直接从样本中直接统计出来期望，为啥要用一个模型来预估呢？其实答案也很简单：一个样本不能同时存在treatment和contol组，如果不用模型，对于这样的potential outcome就无法通过统计得出了，这里需要注意 $\mathbb{E}_X$ 是针对所有的样本，既包含实验组也包含对照组的样本。另外这样的设计也是有利于设计更加honest的模型，比如可以通过其他的样本来预估  $m(1,x)$  ，从而减少Conditional Average Treatment Effect的variance的累积。
 
-如果我们的数据分布完美的契合真实的分布 $\mathcal{P}$ ，以随机的方式施加Treatment，那么对应的$\tau(x)$可以直接通过数据统计进行估计。然而在Observational Data数据分布 $\tilde{\mathcal{P}}$下，施加Treatment的概率 $e(x)=P(T=1|X=x)$就不再是一个随机分布了，而是现实世界中真实收集的数据。在这个子人群上可能某些 $x_i$被施加Treatment的概率$e(x)$会天然更高或者更低，这种情况下利用上述的方法计算得到的 $\tau(x)$ 就是一个bias estimation。
+如果我们的数据分布完美的契合真实的分布  $\mathcal{P}$  ，以随机的方式施加Treatment，那么对应的$\tau(x)$可以直接通过数据统计进行估计。然而在Observational Data数据分布 $\tilde{\mathcal{P}}$下，施加Treatment的概率 $e(x)=P(T=1|X=x)$就不再是一个随机分布了，而是现实世界中真实收集的数据。在这个子人群上可能某些 $x_i$ 被施加Treatment的概率 $e(x)$会天然更高或者更低，这种情况下利用上述的方法计算得到的 $\tau(x)$ 就是一个bias estimation。
 
 前面已经说过了通过简单的统计方法学到的是一个有偏的估计值，那有没有办法做一下debias呢？方法其实有很多，这里我先给出一个最简单的形式 $\mathbb{E}(\frac{Y}{e(X)})$ ，一般我们称之为IPW（Inverse Propensity Weighting），也就是针对更加有可能被放置到Treatment组的样本进行降权，而针对概率比较小的样本进行提权，寄希望通过这样的方式将$\tilde{\mathcal{P}}$ 还原到真实分布 $\mathcal{P}$，从而获得一个无偏的CATE的估计。
 
@@ -51,26 +52,26 @@ $$
 =&\frac{1}{n}\sum_i\{y_1-y_0\}
 \end{align}
 $$
-也就是plug-in estimator，成功避免了$m(T,x)$不准的情况。
+也就是plug-in estimator，成功避免了 $m(T,x)$不准的情况。
 
 所以这个参数估计的值无论在哪个模型的精度取得比较大提升的情况下，都会导致CATE精度更高，收敛速度也更快的性质就被成为double robust。
 
 写到这里估计就会有同学产生跟我一样的疑惑，为啥单单挑这个一长串不利于记忆的公式来做改进呢？难道是这些大神们真的是通灵术超强，在意识海中凭空召唤了一个这么恶心又恰好满足doubly robust的公式？我也是翻了很多历史古籍，才发现这里面是有迹可循的，后面的内容将从我的理解方式逐步展开。
 ### 参数估计
 
-要想理解上面的AIPW的公式以及doubly robust，还是要回到最基本的概念也就是参数估计，只不过在这里参数是特定的CATE。预估某个参数 $\Psi(\mathcal P)$，如果能够获得真实的分布 $\mathcal P$，那么我们可以豪不费力地给出一个无偏的预估值，比如 $\mathbb E(Y)$的真实值，也就是我们经常在文档中看到的plug-in Estimator。然而现实的残酷在于，我们只能获得n个Empirical Sample，可以记作分布 $\mathcal P_n$，如果需要从$\mathcal P_n$ 出发，去计算一个真实分布的某个参数的预估值 $\Psi(\mathcal P_n)$，它与真实的误差 $\Psi(\mathcal P_n) - \Psi(\mathcal P)$其实就取决于 $\mathcal P_n$和 $\mathcal P$的差异有多大。所以如果去探究某个参数最后的收敛性，问题就变成了随着$n \rightarrow \infty$ ， $\mathcal P$ 和 $\mathcal P_n$ 有多接近。
+要想理解上面的AIPW的公式以及doubly robust，还是要回到最基本的概念也就是参数估计，只不过在这里参数是特定的CATE。预估某个参数 $\Psi(\mathcal P)$，如果能够获得真实的分布 $\mathcal P$，那么我们可以豪不费力地给出一个无偏的预估值，比如 $\mathbb E(Y)$的真实值，也就是我们经常在文档中看到的plug-in Estimator。然而现实的残酷在于，我们只能获得n个Empirical Sample，可以记作分布 $\mathcal P_n$，如果需要从$\mathcal P_n$ 出发，去计算一个真实分布的某个参数的预估值 $\Psi(\mathcal P_n)$，它与真实的误差 $\Psi(\mathcal P_n) - \Psi(\mathcal P)$其实就取决于 $\mathcal P_n$ 和 $\mathcal P$ 的差异有多大。所以如果去探究某个参数最后的收敛性，问题就变成了随着 $n \rightarrow \infty$ ， $\mathcal P$ 和 $\mathcal P_n$ 有多接近。
 
 既然聊到了收敛性，这里先简单科普一下convergence学术领域的常用的符号 $O(n^d)$以及 $o(n^d)$ 表达的含义:
 
-1. 如果说到某个函数 $f(n)$是$O(n^d)$，表达的意思是当 $n \rightarrow \infty$，$f(n)$和 $n^d$以同样的速率增长或者缩小。如果 $d<0$，就表示$f(n)$和 $n^d$ 以同样的速率向0衰减。
+1. 如果说到某个函数 $f(n)$是 $O(n^d)$，表达的意思是当 $n \rightarrow \infty$，$f(n)$和 $n^d$ 以同样的速率增长或者缩小。如果 $d<0$，就表示 $f(n)$和 $n^d$ 以同样的速率向0衰减。
 
-2. 如果说到某个函数 $f(n)$是 $o(n^d)$，表达的意思是当 $n \rightarrow \infty$， $\frac{f(n)}{n^d} \rightarrow 0$ ，也就是 $f(n)$以小于 $n^d$的速率进行增长或者衰减。
+2. 如果说到某个函数 $f(n)$是 $o(n^d)$，表达的意思是当 $n \rightarrow \infty$， $\frac{f(n)}{n^d} \rightarrow 0$ ，也就是 $f(n)$以小于 $n^d$ 的速率进行增长或者衰减。
 
-3. 如果提到 $a_n$是 $O_p(n^d)$ ，一般是指Order in Probablity。可以理解为对于任意一个 $\epsilon>0$ ，都存在一个 $K >0$ ，使得当 $n \rightarrow \infty$ ，$Prob(|a_n/n^d|>K) <\epsilon$
+3. 如果提到 $a_n$ 是 $O_p(n^d)$ ，一般是指Order in Probablity。可以理解为对于任意一个 $\epsilon>0$ ，都存在一个 $K >0$ ，使得当 $n \rightarrow \infty$ ，$Prob(|a_n/n^d|>K) <\epsilon$
 
-4. 如果提到 $a_n$是 $o_p(n^d)$，一般是指当 $n \rightarrow \infty$,$Prob(|a_n/n^d|>K) <\epsilon$，表达的含义与2中表达的事同一个意思。
+4. 如果提到 $a_n$ 是 $o_p(n^d)$，一般是指当 $n \rightarrow \infty$,$Prob(|a_n/n^d|>K) <\epsilon$，表达的含义与2中表达的事同一个意思。
 
-5. 有很多一致性的Estimator被称为“root-n consistent”，表达的含义其实就是 $\hat{\theta}-\theta = O_p(n^{-1/2})$ ，或者写成 $\sqrt{n}(\hat{\theta}-\theta)=O_p(1)$。从一个更加利于理解的角度看 $\sqrt{n}$ 会随着 $n \rightarrow \infty$ 趋近于无穷大，但是$\hat{\theta}-\theta$会随着$n$的增加，把乘积拉到一个常数水平。
+5. 有很多一致性的Estimator被称为“root-n consistent”，表达的含义其实就是 $\hat{\theta}-\theta = O_p(n^{-1/2})$ ，或者写成 $\sqrt{n}(\hat{\theta}-\theta)=O_p(1)$。从一个更加利于理解的角度看 $\sqrt{n}$ 会随着 $n \rightarrow \infty$ 趋近于无穷大，但是$\hat{\theta}-\theta$ 会随着 $n$ 的增加，把乘积拉到一个常数水平。
 
 这些符号在很多阐述收敛性的文章中都会出现，这里啰嗦一点简单介绍一下，便于大家理解后面的内容。
 
@@ -82,21 +83,21 @@ $$
 
 然而对其他某些形式的参数则不一定能够给出一个简单的推导和数据分布，例如用模型预估出来的 $\Psi(\mathcal{P}) = m(1,x)=\hat{\mathbb{E}}(Y|T=1,X=x)$ ，这样的推导就几乎不可能了，那么在这样的情况下我们该如何计算这个偏差，并且判断参数估计的收敛性？
 
-这时一个比较巧妙的方法就被提出来，并且很好地解决了这个问题：我们仔细观察$\sqrt{n}(\Psi(\mathcal P_n) - \Psi(\mathcal P))$这个公式，其中两项都是关于某个数据分布的函数，这两个分布又有千丝万缕的联系：$\mathcal{P}_n$ 是真实分布$\mathcal{P}_n$采样出来的一个分布，其中真实分布$\mathcal{P}$ 是未知的，如果我们能够把 $\Psi(\mathcal{P})$在已知分布$\mathcal{P}_n$处做一下泰勒展开，展开公式中除了 $\Psi(\mathcal{P}_n)$ ，还有 $\Psi'(\mathcal{P}_n)(\mathcal{P-\mathcal{P}_n})$和 $\Psi''(\mathcal{P}_n)(\mathcal{P-\mathcal{P}_n})^2$等。这样 $\sqrt{n}(\Psi(\mathcal P_n) - \Psi(\mathcal P))$相减的问题就转化成了求导数 $\sum_{m=1}^M\frac{\Psi^m(\mathcal{P}_n)}{m!}(\mathcal{P-\mathcal{P}_n})^m$ 问题了，想要多大的精度可以视倒数推导难度来综合决定了。
+这时一个比较巧妙的方法就被提出来，并且很好地解决了这个问题：我们仔细观察$\sqrt{n}(\Psi(\mathcal P_n) - \Psi(\mathcal P))$这个公式，其中两项都是关于某个数据分布的函数，这两个分布又有千丝万缕的联系：$\mathcal{P}_n$ 是真实分布$\mathcal{P}_n$ 采样出来的一个分布，其中真实分布$\mathcal{P}$ 是未知的，如果我们能够把 $\Psi(\mathcal{P})$在已知分布$\mathcal{P}_n$ 处做一下泰勒展开，展开公式中除了 $\Psi(\mathcal{P}_n)$ ，还有 $\Psi'(\mathcal{P}_n)(\mathcal{P-\mathcal{P}_n})$和 $\Psi''(\mathcal{P}_n)(\mathcal{P-\mathcal{P}_n})^2$等。这样 $\sqrt{n}(\Psi(\mathcal P_n) - \Psi(\mathcal P))$相减的问题就转化成了求导数 $\sum_{m=1}^M\frac{\Psi^m(\mathcal{P}_n)}{m!}(\mathcal{P-\mathcal{P}_n})^m$ 问题了，想要多大的精度可以视倒数推导难度来综合决定了。
 既然要用泰勒展开就涉及到一个亟待解决的问题：应该如何求导？基于这样一个朴素的问题，就引出了一个重要概念：Efficient Influence Function。
 
 ### Efficient Influence Function
 
 有时候我也在想这个名字的出处，为什么叫做Efficient Influence，实在不太理解取这个名字除了增加理解的壁垒，还有什么其他的用意。既然提到如何进行求导，我们还是从微分的推导的视角来看看这个问题。
 
-我们是希望求解的是：预估参数$\Psi(\mathcal{P})$关于生成数据的分布 $\mathcal{P}$在某个观测分布 $\mathcal{P}_t$导数，这是一个泛函的概念，我们可以假设在生成数据真实分布 $\mathcal{P}$一点点的扰动 $\tilde{\mathcal{P}}$就可以产生这个观测分布$\mathcal{P}_t$。这里引入了一个新概念
+我们是希望求解的是：预估参数$\Psi(\mathcal{P})$关于生成数据的分布 $\mathcal{P}$在某个观测分布 $\mathcal{P}_t$ 导数，这是一个泛函的概念，我们可以假设在生成数据真实分布 $\mathcal{P}$一点点的扰动 $\tilde{\mathcal{P}}$就可以产生这个观测分布$\mathcal{P}_t$。这里引入了一个新概念
 
 parametric submodel，也就是通过定义一个简单的线性的组合来表达这个扰动：
 
 $$
 \mathcal{P}_t=t\tilde{\mathcal{P}} + (1-t)\mathcal{P}
 $$
-可以认为每一个$\mathcal{P}_t$ 都对应着一个参数的子模型。这里我没有延续上文用到的 $\mathcal{P}_n$，而是用 $\mathcal{P}_t$来表示，主要是为了与论文中的符号保持一致，另外也在强调这是一个更加一般的分布表示。
+可以认为每一个$\mathcal{P}_t$ 都对应着一个参数的子模型。这里我没有延续上文用到的 $\mathcal{P}_n$，而是用 $\mathcal{P}_t$ 来表示，主要是为了与论文中的符号保持一致，另外也在强调这是一个更加一般的分布表示。
 当下面的微分方程存在的时候，就被称为pathwise differentiable
 $$
 \mathop{\lim}_{t\rightarrow 0} (\frac{\Psi({\mathcal{P_t}})-\Psi(\mathcal{P})}{t})=\frac{d \Psi(\mathcal{P}_t)}{d t} |_{t=0}
@@ -139,7 +140,7 @@ $$
 
 这里不是太容易理解，这里举一个 $\Psi(\mathcal{P})=\mathbb{E}(Y)$例子，它的Efficient Influence Function是： $\Phi(\mathcal{P})=Y-\Psi(\mathcal{P})$，代入到前面说到的公式可以得到： $\mathcal{P}_t(\Phi(\mathcal{P}_t))=\int [Y-\Psi(\mathcal{P}_t)] \mathrm{d} \mathcal{P}_t=0$
 
-可以根据这个公式大致给出一个比较形象的理解：在某一个submodel $\mathcal{P}_t$分布上计算出来的Efficient Influence Function有点像在 $\mathcal{P}_t$上求得的所有样本关于该分布的梯度期望为0。这里你是不是联想到无偏估计了，无论数据分布是什么，关于参数的预估都有一个统一的无偏估计的表达式。
+可以根据这个公式大致给出一个比较形象的理解：在某一个submodel $\mathcal{P}_t$ 分布上计算出来的Efficient Influence Function有点像在 $\mathcal{P}_t$ 上求得的所有样本关于该分布的梯度期望为0。这里你是不是联想到无偏估计了，无论数据分布是什么，关于参数的预估都有一个统一的无偏估计的表达式。
 
 ### 推导CATE的Efficient Influence Function
 
@@ -156,7 +157,7 @@ $$
  &=\int y\frac{f_t(x,y,1)}{f_t(1,x)}f_t(x)\mathrm{d}y\\ 
  \end{align}
 $$
-注意一下上述公式里面的 $f_t(x,y,1)$ 和 $f_t(x,1)$，首先要关注的是这两个概率密度函数是关于 $t$的泛函。另外为什么要写成这种相除的形式呢？主要原因是 $f_t(y|x,t=1)$ 这个概率密度函数不太好直接给出，另外在处理 $t\mathbb{I}(\tilde{o})$这个分布时，条件概率并不好直接处理。下面的公式中会出现 $f_{t=0}(1,x,y)$，本质上就是 $\mathcal{P}$ 。
+注意一下上述公式里面的 $f_t(x,y,1)$ 和 $f_t(x,1)$，首先要关注的是这两个概率密度函数是关于 $t$ 的泛函。另外为什么要写成这种相除的形式呢？主要原因是 $f_t(y|x,t=1)$ 这个概率密度函数不太好直接给出，另外在处理 $t\mathbb{I}(\tilde{o})$这个分布时，条件概率并不好直接处理。下面的公式中会出现 $f_{t=0}(1,x,y)$，本质上就是 $\mathcal{P}$ 。
 $$
 \begin{align}  \frac{\mathrm{d}\Psi(\mathcal{P}_t)}{\mathrm{d}t} \Bigg\vert_{t=0} &=\frac{\mathrm{d}\int y\frac{f_t(x,y,1)f_t(x)}{f_t(1,x)}\mathrm{d}y\mathrm{d}x}{\mathrm{d}t}\Bigg|_{t=0}\\ &=\int(y\{\frac{f'_t(x,y,1)f_t(x)f_t(1,x)+f'_t(x)f_t(x,y,1)f_t(1,x)}{(f_t(1,x))^2}\\&-\frac{f_t'(1,x)f_t(x,y,1)f_t(x)}{(f_t(1,x))^2})\}\mathrm{d}y\mathrm{d}x\Bigg|_{t=0}\\ 
 &=\int y\{\frac{(\mathbb{I}(\tilde{x},\tilde{y},1)-f_{t=0}(1,x,y))f_{t=0}(1,x)f_{t=0}(x)}{(f_{t=0}(1,x))^2}\\
@@ -169,7 +170,7 @@ $$
 $$
 这个公式是不是似曾相识，说实话这个CATE公式的推导其实困扰了我好多年，花了很多气力才把这些艰深莫测的公式理解清楚，但每次一看到这个奇怪的公式又觉得自己根本没有理解，所以在这里用这个例子当做一个里程碑的总结。这个公式就是 $\Psi(\mathcal{P}_t)$在某个点 $\tilde{o}(\tilde{x},\tilde{y},1)$对应的EIF，其中：
 
-$m(1,x) = \int yf(y|1,x)\mathrm{d}y\mathrm{d}x$ ，也就是$y$的条件概率的期望。
+$m(1,x) = \int yf(y|1,x)\mathrm{d}y\mathrm{d}x$ ，也就是 $y$ 的条件概率的期望。
 
 $\pi(\tilde{x},\mathcal{P}) = \frac{f(1,x)}{f(x)}|_{x=\tilde{x}}$ ，其实就是很多文献中写的Propensity Score： $e(\tilde{x})$。
 
@@ -181,19 +182,19 @@ $\pi(\tilde{x},\mathcal{P}) = \frac{f(1,x)}{f(x)}|_{x=\tilde{x}}$ ，其实就�
 
 ### von Miles Extension
 
-还记得前面的章节提到我们可以把目标参数 $\Psi(\mathcal{P})$ 在 $\mathcal{P}_n$点进行泰勒展开：
+还记得前面的章节提到我们可以把目标参数 $\Psi(\mathcal{P})$ 在 $\mathcal{P}_n$ 点进行泰勒展开：
 
 $$
 \Psi(\mathcal{P})=\Psi(\mathcal{P}_n)+\sum_{m=1}^M\frac{\Psi^m(\mathcal{P}_n)}{m!}(\mathcal{P-\mathcal{P}_n})^m
 $$
 
-这里我们先简单看一下$t=1$处的一阶展开：
+这里我们先简单看一下 $t=1$处的一阶展开：
 
 $$
 \Psi(\mathcal{P})=\Psi(\mathcal{P}_n)+\frac{\mathrm{d}\Psi(\mathcal{P}_n)}{\mathrm{d}t}|_{t=1}(0-1)+R(\mathcal{P},\mathcal{P}_n)
 $$
 
-注意下这里的并不是 $\frac{\mathrm{d}\Psi(\mathcal{P}_n)}{\mathrm{d}t}\Big|_{t=0}$ 而是 $\frac{\mathrm{d}\Psi(\mathcal{P}_n)}{\mathrm{d}t}\Big|_{t=1}$ ，原因主要是我们希望在分布 $\mathcal{P}_n$处进行泰勒展开，这是我们能够收集到的真实数据，可以做各种参数的预估和统计。那问题就变成了这个求导结果是什么？
+注意下这里的并不是 $\frac{\mathrm{d}\Psi(\mathcal{P}_n)}{\mathrm{d}t}\Big|_{t=0}$ 而是 $\frac{\mathrm{d}\Psi(\mathcal{P}_n)}{\mathrm{d}t}\Big|_{t=1}$ ，原因主要是我们希望在分布 $\mathcal{P}_n$ 处进行泰勒展开，这是我们能够收集到的真实数据，可以做各种参数的预估和统计。那问题就变成了这个求导结果是什么？
 
 答案也比较简单，根据前面推导的求导公式：
 
@@ -201,7 +202,7 @@ $$
 \frac{\mathrm{d}\Psi(t)}{\mathrm{d}t}=\frac{\mathrm{d}\Psi(t)}{\mathrm{d}\mathcal{P}_t}\frac{\mathrm{d}\mathcal{P}_t}{\mathrm{d}t}=\frac{\mathrm{d}\Psi(t)}{\mathrm{d}\mathcal{P}_t}(\tilde{\mathcal{P}}-\mathcal{P})=(\tilde{\mathcal{P}}-\mathcal{P})(\phi(O,\mathcal{P}_t))
 $$
 
-所以当$t=1$ 时，可以得到：
+所以当 $t=1$ 时，可以得到：
 
 $$
 \frac{\mathrm{d}\Psi(t)}{\mathrm{d}\mathcal{P}_t}\frac{\mathrm{d}\mathcal{P}_t}{\mathcal{d} t}\Big|_{t=1}=(\tilde{\mathcal{P}}-\mathcal{P})(\phi(O,\tilde{\mathcal{P}}))=-\mathcal{P}\phi(O,\tilde{\mathcal{P}})
@@ -210,7 +211,7 @@ $$
 $$
 \begin{align} \sqrt{n}(\Psi(\mathcal{P})-\Psi(\mathcal{P}_n))&=\sqrt{n}\ \frac{\mathrm{d}\Psi(\mathcal{P}_n)}{\mathrm{d}t}|_{t=1}(0-1)+R(\mathcal{P},\mathcal{P}_n)\\ &=\sqrt{n}\  \mathbb{E}_\mathcal{P}(\phi(O,\mathcal{P}_n))+R(\mathcal{P},\mathcal{P}_n)  \end{align}
 $$
-如果希望前者具备$O_p(n^{-1/2})$一致性，就需要后面的一次展开项趋近于0，这个就是CATE预估领域出现各种算法的基石了，本质上都是在做如何让这一项趋近于0。如果更加细致的思考这个问题，你会发现即使一次项趋近于0，高阶余项残差$R(\mathcal{P},\mathcal{P}_n)$也有可能是不趋近于0的。我们先把可能存在的更高阶的展开放到一边，根据我们对泰勒展开的理解，这样的一阶展开至少在一个比较小的范围内，这个小的范围可以理解为 $\mathcal{P}_n$与 $\mathcal{P}$ 分布差异没有那么大的情况下，是对公式左侧参数比较接近的一个估计。
+如果希望前者具备 $O_p(n^{-1/2})$一致性，就需要后面的一次展开项趋近于0，这个就是CATE预估领域出现各种算法的基石了，本质上都是在做如何让这一项趋近于0。如果更加细致的思考这个问题，你会发现即使一次项趋近于0，高阶余项残差 $R(\mathcal{P},\mathcal{P}_n)$也有可能是不趋近于0的。我们先把可能存在的更高阶的展开放到一边，根据我们对泰勒展开的理解，这样的一阶展开至少在一个比较小的范围内，这个小的范围可以理解为 $\mathcal{P}_n$ 与 $\mathcal{P}$ 分布差异没有那么大的情况下，是对公式左侧参数比较接近的一个估计。
 
 ### One-Step Estimator
 
@@ -220,7 +221,7 @@ $$
 \begin{align} \sqrt{n}(\Psi(\mathcal{P})-[\Psi(\mathcal{P}_n)+\  \mathbb{E}_\mathcal{P}(\phi(O,\mathcal{P}_n))]) &=R(\mathcal{P},\mathcal{P}_n)  \end{align}
 $$
 
-我们可以把 $\Psi(\mathcal{P}_n)+\  \mathbb{E}_\mathcal{P}(\phi(O,\mathcal{P}_n))$看做一个Estimator，如果在一个小范围内，可以把 $\mathcal{P}_n$看做真实分布$\mathcal{P}$ 的一种近似，所以上面的公式可以写成：
+我们可以把 $\Psi(\mathcal{P}_n)+\  \mathbb{E}_\mathcal{P}(\phi(O,\mathcal{P}_n))$看做一个Estimator，如果在一个小范围内，可以把 $\mathcal{P}_n$ 看做真实分布$\mathcal{P}$ 的一种近似，所以上面的公式可以写成：
 
 $$
 \Psi^\star(\mathcal{P}_n)=\Psi(\mathcal{P}_n)+\  \mathbb{E}_\mathcal{P}(\phi(O,\mathcal{P}_n))\approx \Psi(\mathcal{P}_n)+\frac{1}{n}\sum_{i}^n \phi(O_i,\mathcal{P}_n)
@@ -235,13 +236,13 @@ $$
 \Psi_{T=1}(\mathcal{P})+\Phi_{T=1}(O,\mathcal{P})=\frac{1}{n}\sum_{i=0}^{n}[\frac{\mathbb{I}(X_i)}{\pi(X_i,\mathcal{P})}(Y_i-m(1,X_i))+m(1,X_i)]
 $$
 
-这里 $m(1,X_i)$是通过 $\mathcal{P}_n$训练出来的模型，如果我们希望训练出来的模型就是一个unbiased estimator，就需要要求：
+这里 $m(1,X_i)$是通过 $\mathcal{P}_n$ 训练出来的模型，如果我们希望训练出来的模型就是一个unbiased estimator，就需要要求：
 
 $$
 \frac{1}{n}\sum_{i=0}^{n}\frac{\mathbb{I}(X_i)}{\pi(X_i,\mathcal{P})}(Y_i-m(1,X_i))=0
 $$
 
-现实中肯定不存在这样的好事，所以就需要Tuning一下 $\mathcal{P}_n$ ，让它进行能产生一个模型$m^\star(1,X_i)$使得
+现实中肯定不存在这样的好事，所以就需要Tuning一下 $\mathcal{P}_n$ ，让它进行能产生一个模型 $m^\star(1,X_i)$使得
 
 $\frac{1}{n}\sum_{i=0}^{n}\frac{\mathbb{I}(X_i)}{\pi(X_i,\mathcal{P})}(Y_i-m^\star(1,X_i))=0$ ，这样的好处就是把消除偏差的过程融入到整个训练过程中，得出来的模型就是一个无偏的估计。
 
@@ -249,7 +250,7 @@ $\frac{1}{n}\sum_{i=0}^{n}\frac{\mathbb{I}(X_i)}{\pi(X_i,\mathcal{P})}(Y_i-m^\st
 
 $m(1,\hat{\mathcal{P}_n})=m(1,\mathcal{P}_n)+\epsilon \frac{1}{\pi(X_i,\mathcal{P}_n)}$ 选取一个合适的 $\epsilon$ 让其他项：
 
-$\frac{1}{n}\sum_{i=0}^{n}\frac{\mathbb{I}(X_i)}{\pi(X_i,\mathcal{P})}(Y_i-m(1,X_i)-\epsilon)=0$，所以在训练模型 $m^\star(1,X_i)$过程中，通过模型训练一个 $\epsilon$让这个恒等式始终成立即可。看到这里，你大概也就能理解DragonNet里面提到的Targeted Regularization了，其实DragonNet也是我写这篇文章最原始的起心动念之一。
+$\frac{1}{n}\sum_{i=0}^{n}\frac{\mathbb{I}(X_i)}{\pi(X_i,\mathcal{P})}(Y_i-m(1,X_i)-\epsilon)=0$，所以在训练模型 $m^\star(1,X_i)$过程中，通过模型训练一个 $\epsilon$ 让这个恒等式始终成立即可。看到这里，你大概也就能理解DragonNet里面提到的Targeted Regularization了，其实DragonNet也是我写这篇文章最原始的起心动念之一。
 
 至此为止我们聊了一大圈，把One-Step Estimator和TMLE的基本原理搞清楚了，但并没有解释他们为何是Doubly Robust的。你可能要问了既然是讲Doubly Robust的文章，为什么要讲这么多不那么相关的概念？
 **核心原因还是我觉得前面的讲述有助于咱们理解Doubly Robust，两者有异曲同工之妙。**
@@ -268,17 +269,17 @@ Y &= D\theta+g(X)+U, \mathbb{E}(U|X,D)=0\\
 \end{align}
 $$
 
-partial linear regression是非常典型的因果推断的建模，假设是treatment的效应 $D$与 $Y$是一个线性关系，并且这也是一个unconfounded问题，不存在潜在的不可以观测变量。这里面有几个概念需要了解一下，我们一般称$g(x)$叫做nuisance parameter，表达的是：对于结果 $Y$产生影响，但是与Treatment不相关的参数。 $e(x)$是通常我们理解的propensity score。面对这样的假设和建模方式，我们想对 $\theta$ 进行参数估计，有很多方法可以使用，这些方法中有些是bias的，有些是unstable的，有些是doubly robust的。这里举一个例子，比如可以直接用第一个公式做一个参数回归，回归得到的 $\theta$就是最后的CATE，所以loss我们就可以构建成：
+partial linear regression是非常典型的因果推断的建模，假设是treatment的效应 $D$ 与 $Y$ 是一个线性关系，并且这也是一个unconfounded问题，不存在潜在的不可以观测变量。这里面有几个概念需要了解一下，我们一般称 $g(x)$叫做nuisance parameter，表达的是：对于结果 $Y$ 产生影响，但是与Treatment不相关的参数。 $e(x)$是通常我们理解的propensity score。面对这样的假设和建模方式，我们想对 $\theta$ 进行参数估计，有很多方法可以使用，这些方法中有些是bias的，有些是unstable的，有些是doubly robust的。这里举一个例子，比如可以直接用第一个公式做一个参数回归，回归得到的 $\theta$ 就是最后的CATE，所以loss我们就可以构建成：
 
 $$
 l (X,D,Y;\theta,g)=\frac{1}{n}\sum(Y-\theta D-g(X))^2
 $$
 
-这里 $g(X)$可以理解成包含各种参数的某个模型，比如我们可以通过梯度下降对最后的$\theta$进行参数预估。但是这样的预估存在一个非常典型的问题，那就是我们没有用上
+这里 $g(X)$可以理解成包含各种参数的某个模型，比如我们可以通过梯度下降对最后的$\theta$ 进行参数预估。但是这样的预估存在一个非常典型的问题，那就是我们没有用上
 $$
 D=e(X)+V
 $$
-相当于切断了covariate $X$和Treatment $D$之间的联系，这会带来$\theta$预估结果的偏差。除此之外按照我们对于凸函数的理解，$l(X,D,Y;\theta,g)$会在关于$\theta$的导数为0的地方取得极值，也就是$\frac{1}{n}\sum(Y-\theta D-g(X))D=0$，这样一个导数如果在$g(X)$预估不准的情况下会引起$\frac{1}{n}\sum(Y-\theta D-g(X))D$有比较大的扰动，从而使得$\theta$的预估和$g(X)$的预估扰动非常相关，比较难以收敛。其实这就是double robust想要解决的问题。那怎样才能获得一个更加robust的参数预估呢？
+相当于切断了covariate $X$ 和Treatment $D$ 之间的联系，这会带来$\theta$ 预估结果的偏差。除此之外按照我们对于凸函数的理解，$l(X,D,Y;\theta,g)$会在关于$\theta$ 的导数为0的地方取得极值，也就是$\frac{1}{n}\sum(Y-\theta D-g(X))D=0$，这样一个导数如果在 $g(X)$预估不准的情况下会引起$\frac{1}{n}\sum(Y-\theta D-g(X))D$ 有比较大的扰动，从而使得$\theta$ 的预估和 $g(X)$的预估扰动非常相关，比较难以收敛。其实这就是double robust想要解决的问题。那怎样才能获得一个更加robust的参数预估呢？
 我们先做一个变换：
 $$
 Y-g(X)=\theta D+U
@@ -291,20 +292,20 @@ $$
 $$
 \mathbb{E}(Y|X)-g(X)=\theta\mathbb{E}( D|X)
 $$
-然后和$Y-g(X)=\theta D+U$左右进行相减得到：
+然后和 $Y-g(X)=\theta D+U$ 左右进行相减得到：
 $$
 Y-\mathbb{E}(Y|X)=\theta (D-\mathbb{E}(D|X))+U
 $$
-通过上面的公式可以构造出来新的𝜃的预估loss，这里需要注意一个特别容易看错的点：**$g(x)$ 和$\mathbb{E}(Y|X)$ 分别表达的含义不一致**。前者是在control组情况下对应的outcome预估函数，后者是treatment和control样本放在一起的期望值，多数文章中用$m(x)$来表示。上述等式其实就是R-Learner基本的推导公式，也是我们经常说到的Robinson的partialling-out方法。利用$e(x)$来预估$\mathbb{E}(D|X)$，利用上述相同的方法这个预估得出的loss的导数是：
+通过上面的公式可以构造出来新的𝜃的预估loss，这里需要注意一个特别容易看错的点：**$g(x)$ 和$\mathbb{E}(Y|X)$ 分别表达的含义不一致**。前者是在control组情况下对应的outcome预估函数，后者是treatment和control样本放在一起的期望值，多数文章中用 $m(x)$来表示。上述等式其实就是R-Learner基本的推导公式，也是我们经常说到的Robinson的partialling-out方法。利用 $e(x)$来预估$\mathbb{E}(D|X)$，利用上述相同的方法这个预估得出的loss的导数是：
 $$
 \frac{1}{n}\sum(Y-\mathbb{E}(Y|X)-\theta (D-e(X)))(D-e(X))=0\\
 \frac{1}{n}\sum(Y-\theta D-g(X))(D-e(X))=0
 $$
-这个导数即使在$g(X)$预估不准的情况下，只需要$e(X)$能够预估准确，也能够使得loss接近于0，从而有效抵抗由于$g(X)$或者$e(X)$扰动带来的收敛性问题，这其实就是Doubly Robust性质的直观理解。
+这个导数即使在 $g(X)$预估不准的情况下，只需要 $e(X)$能够预估准确，也能够使得loss接近于0，从而有效抵抗由于 $g(X)$或者 $e(X)$扰动带来的收敛性问题，这其实就是Doubly Robust性质的直观理解。
 
 ### Neyman Orthogonality
 理论上通过上面这个例子，我们大致就可以直观的理解了什么叫做Doubly Robust，在我看来也就够了。但是Double Machine Learning其实是一套很完整的理论体系，后面的内容我会从理论的视角继续阐述我对于Doubly Robust更多的理解，更加重要的是阐述一下Doubly Robust在CATE场景上构造的estimator为什么长成那个样子。
-通过上面的例子，我们大致可以有一个感受，可以通过对loss进行求导，然后观察这个偏导本身是否具有doubly robust性质，就可以判定目前的参数预估是不是可以加速收敛。这个偏导就引出一个重要的概念，叫做**score function**，可以用$\varphi(X,Y,D;\hat{\theta},\hat{g})$表示，更加通用的写法可以写成$\varphi(O;\theta,\eta)$，这里$\eta$表述nuinsane parameters。一个无偏的预估器一定要满足，这个条件被称为**moment condition**：
+通过上面的例子，我们大致可以有一个感受，可以通过对loss进行求导，然后观察这个偏导本身是否具有doubly robust性质，就可以判定目前的参数预估是不是可以加速收敛。这个偏导就引出一个重要的概念，叫做**score function**，可以用$\varphi(X,Y,D;\hat{\theta},\hat{g})$表示，更加通用的写法可以写成$\varphi(O;\theta,\eta)$，这里$\eta$ 表述nuinsane parameters。一个无偏的预估器一定要满足，这个条件被称为**moment condition**：
 $$
 g(O;\hat{\theta},\hat{\eta})=\mathbb{E} (\varphi(O;\hat{\theta},\hat{\eta}))=0
 $$
@@ -328,27 +329,27 @@ $$
 \psi(O;\theta,\eta)=(m(1,X)-m(0,X))+\frac{D(Y-m(1,X))}{e(X)}\\-\frac{(1-D)(Y-m(0,X))}{1-e(X)}-\Psi(X)
 $$
 
-这里的$\eta=\{m,e\}$，把上面的式子求期望=0，得出的$\Psi(X)$的预估结果是不是似曾相识，没错，就是前文讲述EIF时推导给出预估公式基本一致。你会不会也跟我一样发出相同的疑问，为什么从不同的角度出发得到的就够是如此的一致？这个问题直到我仔细研究Neyman orthogonal score和influence function的关系时，我才理解这其中的道理：他们都用了von Miles Extension这样的方法来研究这个问题，前者是研究关于模型分布$\mathcal{P}$的展开，而后者是关于模型参数$\eta$的展开，其实两者有非常紧密的联系。
+这里的$\eta=\{m,e\}$，把上面的式子求期望=0，得出的$\Psi(X)$的预估结果是不是似曾相识，没错，就是前文讲述EIF时推导给出预估公式基本一致。你会不会也跟我一样发出相同的疑问，为什么从不同的角度出发得到的就够是如此的一致？这个问题直到我仔细研究Neyman orthogonal score和influence function的关系时，我才理解这其中的道理：他们都用了von Miles Extension这样的方法来研究这个问题，前者是研究关于模型分布$\mathcal{P}$的展开，而后者是关于模型参数$\eta$ 的展开，其实两者有非常紧密的联系。
 Chernozhukov V提出可以用一下的公式来构造Neyman Orthogonalized score function：
 $$
 \psi(O;\theta,\eta) = \varphi(O;\theta,\beta)+\phi(O;\theta,\eta)
 $$
-其中$\varphi$是**origin score**，$\phi$是**efficient influence function**，你会不会很疑惑：为什么是这个公式？为什么这样就可以构造一个满足Neyman Orthogonality的score function？
+其中$\varphi$ 是**origin score**，$\phi$ 是**efficient influence function**，你会不会很疑惑：为什么是这个公式？为什么这样就可以构造一个满足Neyman Orthogonality的score function？
 这个问题的答案在《Locally robust semiparametric estimation》中进行了比较全面的回答，但是表述过于学术不太容易理解，这里我用简单的方式来阐述一下。
-首先我们知道某个参数$\theta$是要满足moment condition：
+首先我们知道某个参数$\theta$ 是要满足moment condition：
 $$
 g(O;\hat{\theta},\hat{\eta})=\mathbb{E} [(\varphi (O;\hat{\theta},\hat{\eta})])=0
 $$
-这里就引入了**orign score**的概念，origin score $\varphi$你可以理解为从loss求偏导得出的。
+这里就引入了**orign score**的概念，origin score $\varphi$ 你可以理解为从loss求偏导得出的。
 然后我们想知道$\mathbb{E}[g(O;\hat{\theta},\hat{\eta})]$在真实参数$(\theta_0,\eta_0)$的偏导等于0，才能保证具备Neyman Orthogonality性质。这里我们借用一下前面EIF的概念
 $$
 \mathcal{P}_t=t\tilde{\mathcal{P}} + (1-t)\mathcal{P}
 $$
-也就是在真实样本分布做一个小小的扰动，本质上也就是$\eta$的预估产生产生了一个小小的扰动。用前面的概念 参考一下前面介绍的EIF推导过程，我们就可以得到下面的公式：
+也就是在真实样本分布做一个小小的扰动，本质上也就是$\eta$ 的预估产生产生了一个小小的扰动。用前面的概念 参考一下前面介绍的EIF推导过程，我们就可以得到下面的公式：
 $$
  \frac{\partial \mathbb{E}_{\mathcal{P}_t} (\varphi(O;\hat{\theta},\hat{\eta}))}{\partial t} =\mathbb{E}_{\mathcal{\tilde{P}}}(\phi(O,\mathcal{P}))-\mathbb{E}_{\mathcal{P}}(\phi(O,\mathcal{P})) 
 $$
-这个公式咋一看让人费解，仔细看其实就是前面EIF章节讲述的内容，只不过这里换了一个写法，更加简单的理解这就是定义不同而已。在EIF那一节，我们研究的是目标参数在样本扰动下的EIF，而这里是moment condition在样本扰动下的EIF。这里就可以看出他们的联系了，满足moment condition的$\theta$本质上就是一个参数预估，所以只是换种形式来表达参数关于样本扰动的EIF。基于我们对EIF定义的认识可以得出对于，要求任何一个分布，对应的都满足$\mathbb{E}_{\mathcal{P}_t}[\phi(O,\mathcal{P}_t)]=0$，这个是我们前面描述的EIF本身的定义决定的。有从这个公式出发就可以证明$\psi(O;\theta,\eta) = \varphi(O;\theta,\beta)+\phi(O;\theta,\eta)$是一个满足Neyman Orthogonality的score function。
+这个公式咋一看让人费解，仔细看其实就是前面EIF章节讲述的内容，只不过这里换了一个写法，更加简单的理解这就是定义不同而已。在EIF那一节，我们研究的是目标参数在样本扰动下的EIF，而这里是moment condition在样本扰动下的EIF。这里就可以看出他们的联系了，满足moment condition的$\theta$ 本质上就是一个参数预估，所以只是换种形式来表达参数关于样本扰动的EIF。基于我们对EIF定义的认识可以得出对于，要求任何一个分布，对应的都满足$\mathbb{E}_{\mathcal{P}_t}[\phi(O,\mathcal{P}_t)]=0$，这个是我们前面描述的EIF本身的定义决定的。有从这个公式出发就可以证明$\psi(O;\theta,\eta) = \varphi(O;\theta,\beta)+\phi(O;\theta,\eta)$是一个满足Neyman Orthogonality的score function。
 
 $$
 \psi(O;\theta,\eta) = \varphi(O;\theta,\beta)+\phi(O;\theta,\eta)
@@ -363,7 +364,7 @@ $$
 \Rightarrow t\mathbb{E}_{\mathcal{\tilde{P}}}[\phi(O;\theta_{\mathcal{P}_t},\eta_{\mathcal{P}_t})]+(1-t)\mathbb{E}_{\mathcal{P}}[\phi(O;\theta_{\mathcal{P}_t},\eta_{\mathcal{P}_t})]=0\\
 \Rightarrow \frac{1}{t}\mathbb{E}_{\mathcal{P}}[\phi(O;\theta_{\mathcal{P}_t},\eta_{\mathcal{P}_t})]=\mathbb{E}_{\mathcal{P}}[\phi(O;\theta_{\mathcal{P}_t},\eta_{\mathcal{P}_t})]-\mathbb{E}_{\mathcal{\tilde{P}}}[\phi(O;\theta_{\mathcal{P}_t},\eta_{\mathcal{P}_t})]
 $$
-在$t\rightarrow 0$时，所以$\mathbb{E}_{\mathcal{P}}[\phi(O;\theta_{\mathcal{P}_t},\eta_{\mathcal{P}_t})]=\mathbb{E}_{\mathcal{P}}[\phi(O;\theta_{\mathcal{P}},\eta_{\mathcal{P}})]=0$，这是由EIF的定义决定的，所以可以得到：
+在 $t\rightarrow 0$时，所以$\mathbb{E}_{\mathcal{P}}[\phi(O;\theta_{\mathcal{P}_t},\eta_{\mathcal{P}_t})]=\mathbb{E}_{\mathcal{P}}[\phi(O;\theta_{\mathcal{P}},\eta_{\mathcal{P}})]=0$，这是由EIF的定义决定的，所以可以得到：
 $$
 \frac{\mathbb{E}_{\mathcal{P}}[\phi(O;\theta_{\mathcal{P}_t},\eta_{\mathcal{P}_t})]}{t}=-\mathbb{E}_{\mathcal{\tilde{P}}}[\phi(O;\theta_{\mathcal{P}_t},\eta_{\mathcal{P}_t})]
 $$
@@ -378,7 +379,7 @@ $$
 \Rightarrow \frac{\partial \mathbb{E}[\phi(O;\theta_{\mathcal{P}_t},\eta_{\mathcal{P}_t})]}{\partial t}|_{t\rightarrow 0}+ \mathbb{E}_{\mathcal{\tilde{P}}}[\phi(O;\theta_{\mathcal{P}},\eta_{\mathcal{P}})]=0\\
 $$
 
-在这里我们引入前面的关于$\varphi$的定义：
+在这里我们引入前面的关于$\varphi$ 的定义：
 
 $$
 \frac{\partial \mathbb{E}_{\mathcal{P}_t} (\varphi(O;\theta,\eta))}{\partial t}|_{t\rightarrow 0} =\int \phi(o;\theta,\eta)\mathrm{d}\mathcal{\tilde{P}(o)}=\mathbb{E}_{\mathcal{\tilde{P}}}(\phi(O,\mathcal{P}))
@@ -406,7 +407,7 @@ $$
 \end{align}
 $$
 
-补充一点我对$\phi(O;\theta_{\mathcal{P_t}},\eta_{\mathcal{P_t}})$一些自己的理解：这个EIF表达是moment condition $\mathbb{E}[\psi]$关于分布$\mathcal{P}_t$的微小抖动导致的Score Function期望的波动，这里的$\phi$也与前文提到的反映参数预估期望波动的EIF有比较大的差异，两者是不能混为一谈的。这也是我们在读EIF论文时看到它与Double Machine Learning有很多的相似之处，但是又好像有点差异本质的原因。但两者也是有很强的联系的，就如上面的公式所表达的$\frac{\partial \eta}{\partial t}$ 在某些情况下就是求某些参数的EIF，然后通过乘以$\frac{\partial \mathbb{E}[\varphi(O;\theta_{\mathcal{P}_t},\eta_{\mathcal{P}_t})]}{\partial \eta}$就可以得到moment condition的EIF。
+补充一点我对$\phi(O;\theta_{\mathcal{P_t}},\eta_{\mathcal{P_t}})$一些自己的理解：这个EIF表达是moment condition $\mathbb{E}[\psi]$关于分布$\mathcal{P}_t$ 的微小抖动导致的Score Function期望的波动，这里的$\phi$ 也与前文提到的反映参数预估期望波动的EIF有比较大的差异，两者是不能混为一谈的。这也是我们在读EIF论文时看到它与Double Machine Learning有很多的相似之处，但是又好像有点差异本质的原因。但两者也是有很强的联系的，就如上面的公式所表达的$\frac{\partial \eta}{\partial t}$ 在某些情况下就是求某些参数的EIF，然后通过乘以$\frac{\partial \mathbb{E}[\varphi(O;\theta_{\mathcal{P}_t},\eta_{\mathcal{P}_t})]}{\partial \eta}$就可以得到moment condition的EIF。
 
 
 如果对应到paritial linear regression的模型中$\varphi(O;\theta_{\mathcal{P}_t},\eta_{\mathcal{P}_t})=D(Y-D\theta-g(x))$，这里有一个小技巧那就是：$g(X)=\mathbb{E}[Y-D\theta|X]$，可以理解成一个简单参数估计的公式表达。它对应的$\phi_g(\tilde{x},\mathcal{P})=\tilde{y}-\tilde{d}\theta-\mathbb{E}[Y-D\theta|X]$，所以
@@ -418,7 +419,7 @@ $$
 =&Y-D\theta-g(X)
 \end{align}
 $$
-对应的$\phi$可以用下面的公式进行计算：
+对应的$\phi$ 可以用下面的公式进行计算：
 $$
 \begin{align}
 \phi(O;\theta_{\mathcal{P}},\eta_{\mathcal{P}}) =&\frac{\partial \mathbb{E}[\varphi(O;\theta_{\mathcal{P}_t},\eta_{\mathcal{P}_t})]}{\partial \eta}\frac{\partial \eta}{\partial t}\\
@@ -438,11 +439,11 @@ $$
 $$
 \psi(O;\theta,\eta)=(m(1,X)-m(0,X))+\frac{D(Y(1)-m(1,X))}{e(X)}\\-\frac{(1-D)(Y(0)-m(0,X))}{1-e(X)}-\Psi(X)
 $$
-我们如果对上面公式中$m(1,X)$ 和$e(X)$进行求导，就会发现它是满足在$\eta=\eta_0$处导数为0的条件的。所以上面的公式可以直接作为最终的score function使用，如果反推一下这个公式的loss function，大概就是：
+我们如果对上面公式中 $m(1,X)$ 和 $e(X)$进行求导，就会发现它是满足在$\eta=\eta_0$处导数为0的条件的。所以上面的公式可以直接作为最终的score function使用，如果反推一下这个公式的loss function，大概就是：
 $$
 l(O;\theta,\eta)=\mathbb{E}\{(m(1,X)-m(0,X))+\frac{D(Y(1)-m(1,X))}{e(X)}\\-\frac{(1-D)(Y(0)-m(0,X))}{1-e(X)}-\Psi(X)\}^2
 $$
-所以某种程度上CATE的无偏估计的形式是double robust是一种巧合，正好满足了**Neyman Orthogonality**。我也试图从更加原始的一般的orgin score进行推导，看是否能够推导出来这个公式，一直没有想到一个特别好的loss function形式，另外涉及到$m(1,X)$、$m(0,X)$以及$e(X)$三个nuisance model，整个推导的过程也会比较复杂一些。最为简单的理解方式是我们把CATE当做一个参数，Loss Function设定为：$\mathbb{E}\{\Psi(\mathcal{P})-\Psi(\mathcal{P}_n)\}^2$，对应的Origin Score Function是$\mathbb{E}\{\Psi(\mathcal{P})-\Psi(\mathcal{P}_n)\}$，是不是又看到前面提到的One-Step Estimator熟悉的味道了，两者就非常和谐得串联起来了。
+所以某种程度上CATE的无偏估计的形式是double robust是一种巧合，正好满足了**Neyman Orthogonality**。我也试图从更加原始的一般的orgin score进行推导，看是否能够推导出来这个公式，一直没有想到一个特别好的loss function形式，另外涉及到 $m(1,X)$、$m(0,X)$以及 $e(X)$三个nuisance model，整个推导的过程也会比较复杂一些。最为简单的理解方式是我们把CATE当做一个参数，Loss Function设定为：$\mathbb{E}\{\Psi(\mathcal{P})-\Psi(\mathcal{P}_n)\}^2$，对应的Origin Score Function是$\mathbb{E}\{\Psi(\mathcal{P})-\Psi(\mathcal{P}_n)\}$，是不是又看到前面提到的One-Step Estimator熟悉的味道了，两者就非常和谐得串联起来了。
 
 
 
